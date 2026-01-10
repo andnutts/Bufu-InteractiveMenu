@@ -157,7 +157,7 @@ function Discover-SSDP {
 # ==================================================================
 function Get-HttpInfo {
     param([string]$ip, [int]$port = 80)
-    $uri = if ($port -eq 443) { "https://$ip" } else { "http://$ip:$port" }
+    $uri = if ($port -eq 443) { "https://$ip" } else { "http://${ip}:$port" }
     $timeout = New-TimeSpan -Seconds $Script:HttpTimeoutSeconds
     try {
         $resp = Invoke-WebRequest -Uri $uri -Method Head -UseBasicParsing -TimeoutSec $Script:HttpTimeoutSeconds -ErrorAction Stop
@@ -180,7 +180,7 @@ function Try-CommonFirmwareEndpoints {
     foreach ($p in $ports) {
         foreach ($c in $candidates) {
             $schema = if ($p -eq 443) { "https" } else { "http" }
-            $u = "$schema://$ip`:$p$c"
+            $u = "${schema}://${ip}`:$p$c"
             try {
                 $r = Invoke-WebRequest -Uri $u -Method Get -TimeoutSec $Script:HttpTimeoutSeconds -UseBasicParsing -ErrorAction Stop
                 $len = ($r.RawContentLength -as [int]) -or ($r.Content.Length -as [int])
@@ -463,7 +463,7 @@ $MenuItems = @(
                             $port = [int]::TryParse($port, [ref]$null) | Out-Null; $port = $port -gt 0 ? $port : 80
                             if (-not $ip) { Log-Write "Invalid IP."; Pause; return }
 
-                            Log-Write "Performing HTTP probe on $ip:$port..."
+                            Log-Write "Performing HTTP probe on ${ip}:$port..."
                             $headers = Get-HttpInfo -ip $ip -port $port
                             Write-Host "`n--- HTTP Header Probe ($($headers.Url)) ---" -ForegroundColor Cyan
                             $headers | Select-Object IP, Port, StatusCode, Url, Error | Format-Table -AutoSize

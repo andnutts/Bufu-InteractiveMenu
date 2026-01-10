@@ -1,19 +1,4 @@
 function Show-Header {
-    <#
-      .SYNOPSIS
-        Clears the screen and displays a centered, colored banner header.
-      .DESCRIPTION
-        Derives a title with Get-MenuTitle when one is not supplied, prints an optional subtitle,
-        and draws decorative spacer/underline lines using values from $GlobalConfig.
-      .PARAMETER Title
-        Optional title text. If omitted, Get-MenuTitle -Path $ScriptDir is used.
-      .PARAMETER Subtitle
-        Optional subtitle text displayed under the title.
-      .PARAMETER ScriptDir
-        Required script directory or path used to derive a title when -Title is omitted.
-      .PARAMETER MenuSwitches
-        Optional array of menu switches (passed through only if needed by helpers).
-    #>
     param(
         [Parameter(Mandatory=$false)][string]$Title,
         [Parameter(Mandatory=$false)][string]$Subtitle,
@@ -29,15 +14,12 @@ function Show-Header {
     $pad            = if ($GlobalConfig.HeaderPadding) { [int]$GlobalConfig.HeaderPadding } else { 2 }
     $sepChar        = if ($GlobalConfig.SeparatorChar) { $GlobalConfig.SeparatorChar } else { '─' }
     $spacelineChar  = if ($GlobalConfig.SpaceLineChar) { $GlobalConfig.SpaceLineChar } else { '=' }
-
     $titleDisplay = ($GlobalConfig.HeaderIcon + ' ' + $Title).Trim()
     $lineLength = [Math]::Max(10, ($titleDisplay.Length + ($pad * 2)))
     $spaceline = ($spacelineChar * $lineLength)
     $underline  = ($sepChar * $lineLength)
-
     Show-CenteredLine -Token '' -TokenColored:$false -Text $Title     -TextColored:$true -TextFg $GlobalConfig.HeaderTitleColor
     Show-CenteredLine -Token '' -TokenColored:$false -Text $spaceline -TextColored:$true -TextFg $GlobalConfig.SpaceLineColor
-
     if ($ShowExecPath) {
         $displayPath = ("Execution path: $ScriptDir")
         Show-CenteredLine -Token '' -TokenColored:$false -Text $displayPath -TextColored:$true -TextFg $GlobalConfig.InfoColor
